@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SkyWet - Weather</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to top, #1e3c72, #2a5298); /* Sky-like gradient */
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding-top: 60px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 4px #000;
+    }
+
+    .weather-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      width: 360px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .weather-container:hover {
+      transform: scale(1.03);
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      width: 80%;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      outline: none;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    button {
+      padding: 12px 24px;
+      background: #00c6ff;
+      background: linear-gradient(to right, #0072ff, #00c6ff);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #0059ff, #00aaff);
+    }
+
+    .info {
+      margin: 12px 0;
+      font-size: 18px;
+      color: #ffffff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .weather-icon {
+      margin: 20px auto;
+      width: 64px;
+      height: 64px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🌤️ SkyWet Weather</h1>
+
+<input type="text" id="cityInput" placeholder="Enter a city name" />
+<button onclick="sendRequest()">Get Weather</button>
+
+<div class="weather-container" id="weatherBox" style="display: none;">
+  <h2 id="cityName">City</h2>
+  <img id="weatherIcon" class="weather-icon" src="" alt="Weather Icon">
+  <div class="info">Temperature: <span id="temp"></span> °C</div>
+  <div class="info">Condition: <span id="condition"></span></div>
+  <div class="info">Feels Like: <span id="feelslike"></span> °C</div>
+  <div class="info">Humidity: <span id="humidity"></span>%</div>
+  <div class="info">Wind Speed: <span id="wind"></span> km/h</div>
+</div>
+
+<script>
+  function sendRequest() {
+    const city = document.getElementById("cityInput").value;
+
+    fetch("http://localhost:8080/api/weather/get", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ city: city })
+    })
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("weatherBox").style.display = "block";
+      document.getElementById("cityName").innerText = data.location.name + ", " + data.location.region;
+      document.getElementById("weatherIcon").src = "https:" + data.current.condition.icon;
+      document.getElementById("temp").innerText = data.current.temp_c;
+      document.getElementById("condition").innerText = data.current.condition.text;
+      document.getElementById("feelslike").innerText = data.current.feelslike_c;
+      document.getElementById("humidity").innerText = data.current.humidity;
+      document.getElementById("wind").innerText = data.current.wind_kph;
+    })
+    .catch(error => {
+      alert("City not found or server error. Try again!");
+      console.error("Error fetching weather:", error);
+    });
+  }
+</script>
+
+</body>
+</html>

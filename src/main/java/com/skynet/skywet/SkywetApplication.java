@@ -1,0 +1,13 @@
+package com.skynet.skywet;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SkywetApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SkywetApplication.class, args);
+	}
+
+}
